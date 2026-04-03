@@ -5,40 +5,559 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RSL Music - Gizlilik Politikası</title>
     
-    <base href="/rslsoft.github.io/" />
-    
-    <link rel="stylesheet" href="css/app.css" />
-    <link rel="stylesheet" href="css/privacy.css" />
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link href="RslSoftMusicAppBlazor.styles.css" rel="stylesheet" />
     <style>
-        /* Siyah yuvarlağı ve hata barını gizliyoruz */
-        .loading-progress, #blazor-error-ui {
-            display: none;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --dark-bg: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --accent-purple: #8b5cf6;
+            --accent-blue: #3b82f6;
+            --accent-orange: #f97316;
+            --accent-green: #10b981;
+            --accent-pink: #ec4899;
+            --warning-color: #f59e0b;
         }
-        /* Sayfa yüklenirken bembeyaz kalmasın diye hafif bir yazı */
-        .loading-msg {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: sans-serif;
-            color: #666;
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body, html {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        .privacy-container {
+            min-height: 100vh;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh; display: flex; flex-direction: column; justify-content: center;
+            align-items: center; text-align: center;
+            background: radial-gradient(ellipse at center, #1e293b 0%, #0f172a 100%);
+            position: relative; padding: 2rem;
+        }
+
+        .hero-content { position: relative; z-index: 1; animation: fadeInUp 1s ease-out; }
+        .logo-container.text-only { margin-bottom: 1rem; }
+        .text-only h1 {
+            font-size: 4.5rem; font-weight: 800; letter-spacing: -0.03em;
+            background: var(--primary-gradient); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent; background-clip: text;
+            text-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+        .subtitle { font-size: 1.5rem; color: var(--text-secondary); font-weight: 300; margin-bottom: 1rem; }
+        .version-badge {
+            display: inline-block; background: rgba(255, 255, 255, 0.1); padding: 0.5rem 1rem;
+            border-radius: 50px; font-size: 0.875rem; color: var(--text-secondary); border: 1px solid var(--border-color);
+        }
+        .scroll-indicator {
+            position: absolute; bottom: 3rem; display: flex; flex-direction: column; align-items: center;
+            gap: 0.5rem; cursor: pointer; color: var(--text-secondary); font-size: 0.875rem;
+            transition: all 0.3s; animation: bounce 2s infinite; z-index: 10;
+        }
+        .scroll-indicator:hover { color: var(--text-primary); }
+        .arrow { width: 24px; height: 24px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); }
+
+        /* Content Grid */
+        .content-grid { max-width: 1000px; margin: 0 auto; padding: 4rem 2rem; display: flex; flex-direction: column; gap: 2rem; }
+
+        /* Cards */
+        .info-card {
+            background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 24px;
+            padding: 2.5rem; backdrop-filter: blur(10px); transition: transform 0.3s, box-shadow 0.3s;
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        .info-card:hover { transform: translateY(-5px); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.2); }
+
+        .card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .icon-wrapper { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; }
+        .icon-wrapper.purple { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+        .icon-wrapper.blue { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
+        .icon-wrapper.orange { background: linear-gradient(135deg, #f97316, #fb923c); }
+        .icon-wrapper.green { background: linear-gradient(135deg, #10b981, #34d399); }
+        .icon-wrapper.pink { background: linear-gradient(135deg, #ec4899, #f472b6); }
+        .icon-wrapper.gradient { background: var(--primary-gradient); }
+        .icon-wrapper.warning { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+        .icon-wrapper svg { width: 24px; height: 24px; }
+        h2 { font-size: 1.5rem; font-weight: 600; }
+
+        /* Warning Card */
+        .warning-card { border-color: rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); }
+        .warning-box { background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 16px; padding: 1.5rem; }
+        .warning-text { color: #fbbf24; font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; text-align: center; }
+        .warning-detail { color: var(--text-secondary); line-height: 1.6; text-align: center; margin-bottom: 1.5rem; }
+        .feature-status { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+        .status-item { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: rgba(255, 255, 255, 0.05); border-radius: 12px; font-size: 0.875rem; }
+        .status-item.disabled { opacity: 0.6; }
+        .status-item.active { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-icon { font-size: 1.25rem; }
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .badge.disabled-badge { background: rgba(239, 68, 68, 0.2); color: #f87171; margin-left: auto; }
+        .badge.active-badge { background: rgba(16, 185, 129, 0.2); color: #34d399; margin-left: auto; }
+        .badge.local { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+
+        /* Intro Card */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+        .info-item { display: flex; flex-direction: column; gap: 0.5rem; }
+        .label { font-size: 0.875rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+        .value { font-size: 1.125rem; color: var(--text-primary); }
+        .value.highlight { color: var(--accent-purple); font-weight: 600; }
+        .description { color: var(--text-secondary); line-height: 1.6; font-size: 1rem; }
+
+        /* Data Types */
+        .data-types { display: flex; flex-direction: column; gap: 1.5rem; }
+        .data-item { display: flex; gap: 1rem; padding: 1.5rem; background: rgba(255, 255, 255, 0.03); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .data-item.disabled-data { opacity: 0.7; background: rgba(255, 255, 255, 0.02); }
+        .data-icon { font-size: 2rem; flex-shrink: 0; }
+        .data-content h3 { margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.125rem; }
+        .disabled-tag { display: inline-block; background: rgba(239, 68, 68, 0.2); color: #f87171; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600; margin-left: 0.5rem; }
+        .data-content p { color: var(--text-secondary); line-height: 1.6; margin-bottom: 0.75rem; }
+
+        /* Permissions */
+        .permission-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .permission-box { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; padding: 1.5rem; transition: all 0.3s; }
+        .permission-box:hover { background: rgba(255, 255, 255, 0.05); transform: translateY(-2px); }
+        .permission-box.active-perm { border-left: 3px solid var(--accent-green); }
+        .permission-box.disabled-perm { border-left: 3px solid #ef4444; opacity: 0.8; background: rgba(239, 68, 68, 0.03); }
+        .perm-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+        .perm-icon { font-size: 1.5rem; }
+        .perm-header h3 { font-size: 1.125rem; color: var(--text-primary); }
+        .perm-status { margin-left: auto; font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 50px; background: rgba(16, 185, 129, 0.2); color: #34d399; font-weight: 600; }
+        .perm-status.disabled-status { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .perm-code { font-family: 'Courier New', monospace; font-size: 0.875rem; color: var(--accent-orange); background: rgba(0, 0, 0, 0.3); padding: 0.25rem 0.5rem; border-radius: 4px; margin-bottom: 0.75rem; display: inline-block; }
+        .perm-desc { color: var(--text-secondary); line-height: 1.6; }
+
+        /* Tech Stack */
+        .tech-intro { color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.6; }
+        .tech-stack { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+        .tech-item { display: flex; align-items: center; gap: 1rem; padding: 1.5rem; background: rgba(255, 255, 255, 0.03); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s; }
+        .tech-item:hover { transform: translateX(5px); }
+        .tech-item.active-tech { border-left: 3px solid var(--accent-green); }
+        .tech-item.inactive-tech { border-left: 3px solid #6b7280; opacity: 0.7; }
+        .tech-logo { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; color: white; }
+        .tech-logo.media3 { background: linear-gradient(135deg, #10b981, #059669); }
+        .tech-logo.signalr { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .tech-logo.retrofit { background: linear-gradient(135deg, #f97316, #ea580c); }
+        .tech-logo.coil { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .tech-info h4 { color: var(--text-primary); margin-bottom: 0.25rem; font-size: 1rem; }
+        .tech-status { display: inline-block; font-size: 0.75rem; padding: 0.25rem 0.75rem; border-radius: 50px; background: rgba(16, 185, 129, 0.2); color: #34d399; margin-left: 0.5rem; }
+        .inactive-tech .tech-status { background: rgba(107, 114, 128, 0.2); color: #9ca3af; }
+        .tech-info p { color: var(--text-secondary); font-size: 0.875rem; }
+
+        /* Security */
+        .commitment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .commitment-item { display: flex; gap: 1rem; padding: 1.5rem; background: rgba(255, 255, 255, 0.03); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .check-icon { width: 32px; height: 32px; background: rgba(16, 185, 129, 0.2); color: var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0; }
+        .commitment-item h4 { color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1.125rem; }
+        .commitment-item p { color: var(--text-secondary); line-height: 1.6; }
+
+        /* Rights */
+        .rights-list { list-style: none; display: flex; flex-direction: column; gap: 1.5rem; }
+        .rights-list li { display: flex; gap: 1rem; padding: 1.5rem; background: rgba(255, 255, 255, 0.03); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .rights-list li.future-right { background: rgba(139, 92, 246, 0.05) !important; border: 1px solid rgba(139, 92, 246, 0.2) !important; }
+        .bullet { font-size: 1.5rem; flex-shrink: 0; }
+        .rights-list li div { color: var(--text-secondary); line-height: 1.6; }
+        .rights-list li strong { color: var(--text-primary); }
+        .future-tag { display: block; margin-top: 0.5rem; font-size: 0.75rem; color: var(--accent-purple); font-weight: 600; }
+
+        /* Contact */
+        .contact-section { margin-top: 2rem; }
+        .contact-card { background: var(--primary-gradient); border-radius: 24px; padding: 3rem; text-align: center; color: white; }
+        .contact-card h3 { font-size: 1.5rem; margin-bottom: 1rem; }
+        .contact-card p { opacity: 0.9; margin-bottom: 1.5rem; font-size: 1.125rem; }
+        .email-link { display: inline-flex; align-items: center; gap: 0.75rem; background: rgba(255, 255, 255, 0.2); color: white; padding: 1rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 600; transition: all 0.3s; backdrop-filter: blur(10px); }
+        .email-link:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
+        .email-link svg { width: 20px; height: 20px; }
+
+        /* Footer */
+        footer { text-align: center; padding: 3rem 2rem; color: var(--text-secondary); border-top: 1px solid var(--border-color); margin-top: 2rem; }
+        .footer-note { font-size: 0.875rem; opacity: 0.7; margin-top: 0.5rem; }
+
+        /* Animations */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .text-only h1 { font-size: 2.5rem; }
+            .subtitle { font-size: 1.125rem; }
+            .info-card { padding: 1.5rem; }
+            .permission-grid, .tech-stack, .commitment-grid, .feature-status { grid-template-columns: 1fr; }
+            .contact-card { padding: 2rem 1.5rem; }
+            .status-item { flex-wrap: wrap; }
+            .badge.disabled-badge, .badge.active-badge { margin-left: 0; margin-top: 0.5rem; }
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        <div class="loading-msg">Yükleniyor...</div>
+    <div class="privacy-container">
+        <header class="hero">
+            <div class="hero-content">
+                <div class="logo-container text-only">
+                    <h1>RSL Music</h1>
+                </div>
+                <p class="subtitle">Gizlilik Politikası ve Kullanıcı Hakları</p>
+                <div class="version-badge">v1.1 | Son Güncelleme: Nisan 2026</div>
+            </div>
+            <div class="scroll-indicator" onclick="scrollToElement('main-content')">
+                <span>Aşağı Kaydır</span>
+                <div class="arrow"></div>
+            </div>
+        </header>
+
+        <main class="content-grid" id="main-content">
+            
+            <section class="info-card warning-card">
+                <div class="card-header">
+                    <div class="icon-wrapper warning">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <h2>Önemli Bilgilendirme</h2>
+                </div>
+                <div class="card-body">
+                    <div class="warning-box">
+                        <p class="warning-text">
+                            <strong>Çevrimiçi özellikler geçici olarak devre dışı bırakılmıştır.</strong>
+                        </p>
+                        <p class="warning-detail">
+                            Kullanıcı hesabı oluşturma, giriş yapma ve çevrimiçi dinleme odalarına katılma özellikleri
+                            şu anda kullanıma kapalıdır. Uygulama yalnızca <strong>yerel müzik çalma</strong> modunda çalışmaktadır.
+                            Çevrimiçi özellikler ilerleyen güncellemelerde yeniden aktif edilebilir.
+                        </p>
+                        <div class="feature-status">
+                            <div class="status-item disabled">
+                                <span class="status-icon">🔒</span>
+                                <span>Hesap Oluşturma/Giriş</span>
+                                <span class="badge disabled-badge">Devre Dışı</span>
+                            </div>
+                            <div class="status-item disabled">
+                                <span class="status-icon">🔒</span>
+                                <span>Çevrimiçi Dinleme Odaları</span>
+                                <span class="badge disabled-badge">Devre Dışı</span>
+                            </div>
+                            <div class="status-item active">
+                                <span class="status-icon">✓</span>
+                                <span>Yerel Müzik Çalma</span>
+                                <span class="badge active-badge">Aktif</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="info-card intro-card">
+                <div class="card-header">
+                    <div class="icon-wrapper purple">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h2>Uygulama Bilgileri</h2>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">Geliştirici</span>
+                            <span class="value highlight">RSL SOFT</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Hizmet Türü</span>
+                            <span class="value">Yerel Müzik Çalar Uygulaması</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Mevcut Mod</span>
+                            <span class="value" style="color: var(--accent-green);">Çevrimdışı (Offline-First)</span>
+                        </div>
+                    </div>
+                    <p class="description">
+                        RSL Music, şu anda yalnızca cihazınızdaki yerel müzik dosyalarını çalmak için kullanılan
+                        çevrimdışı bir uygulamadır. Hiçbir kullanıcı hesabı gerektirmez ve internet bağlantısı
+                        olmadan tam işlevsellik sunar.
+                    </p>
+                </div>
+            </section>
+
+            <section class="info-card">
+                <div class="card-header">
+                    <div class="icon-wrapper blue">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                        </svg>
+                    </div>
+                    <h2>Şu Anda Toplanan Veriler</h2>
+                </div>
+                <div class="card-body">
+                    <div class="data-types">
+                        <div class="data-item">
+                            <div class="data-icon">🎵</div>
+                            <div class="data-content">
+                                <h3>Yerel Müzik Kütüphanesi Metadatası</h3>
+                                <p>
+                                    Sadece cihazınızdaki müzik dosyalarının meta verileri (şarkı adı, sanatçı, albüm).
+                                    <strong>Hiçbir sunucuya gönderilmez.</strong> Sadece uygulama içinde listeleme ve
+                                    "Akıllı Liste (AI)" oluşturma için yerel olarak işlenir.
+                                </p>
+                                <span class="badge local">%100 Yerel İşlem</span>
+                            </div>
+                        </div>
+                        
+                        <div class="data-item disabled-data">
+                            <div class="data-icon">👤</div>
+                            <div class="data-content">
+                                <h3>Hesap Bilgileri <span class="disabled-tag">(Devre Dışı)</span></h3>
+                                <p>
+                                    <em>Not: Kullanıcı adı, e-posta ve profil fotoğrafı toplama özelliği şu anda devre dışıdır.</em>
+                                    Etkinleştirildiğinde yalnızca çevrimiçi odalar için kullanılacak ve bu politikada
+                                    güncellenecektir.
+                                </p>
+                                <span class="badge disabled-badge">Şu Anda Toplanmıyor</span>
+                            </div>
+                        </div>
+                        
+                        <div class="data-item disabled-data">
+                            <div class="data-icon">🎧</div>
+                            <div class="data-content">
+                                <h3>Oda Verileri (SignalR) <span class="disabled-tag">(Devre Dışı)</span></h3>
+                                <p>
+                                    <em>
+                                        Not: Çevrimiçi odalarda çalınan şarkı sırası ve katılımcı listesi verileri
+                                        şu anda toplanmamaktadır.
+                                    </em> Etkinleştirildiğinde anlık senkronizasyon için
+                                    kullanılacak ve oturum kapandığında silinecektir.
+                                </p>
+                                <span class="badge disabled-badge">Şu Anda Toplanmıyor</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="info-card permissions-card">
+                <div class="card-header">
+                    <div class="icon-wrapper orange">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h2>Kullanılan İzinler</h2>
+                </div>
+                <div class="card-body">
+                    <div class="permission-grid">
+                        <div class="permission-box active-perm">
+                            <div class="perm-header">
+                                <span class="perm-icon">💾</span>
+                                <h3>Depolama Erişimi</h3>
+                                <span class="perm-status">Aktif</span>
+                            </div>
+                            <p class="perm-code">READ_MEDIA_AUDIO / READ_EXTERNAL_STORAGE</p>
+                            <p class="perm-desc">
+                                Cihazınızdaki yerel müzik dosyalarını bulmak ve oynatmak için <strong>zorunludur</strong>.
+                                Bu izin olmadan uygulama çalışamaz.
+                            </p>
+                        </div>
+
+                        <div class="permission-box active-perm">
+                            <div class="perm-header">
+                                <span class="perm-icon">🔔</span>
+                                <h3>Sistem Ayarları</h3>
+                                <span class="perm-status">İsteğe Bağlı</span>
+                            </div>
+                            <p class="perm-code">WRITE_SETTINGS</p>
+                            <p class="perm-desc">
+                                Şarkıları <strong>zil sesi</strong> olarak ayarlayabilmeniz için isteğe bağlı izin.
+                            </p>
+                        </div>
+
+                        <div class="permission-box disabled-perm">
+                            <div class="perm-header">
+                                <span class="perm-icon">🌐</span>
+                                <h3>İnternet Erişimi</h3>
+                                <span class="perm-status disabled-status">Devre Dışı</span>
+                            </div>
+                            <p class="perm-desc">
+                                <em>Şu anda kullanılmamaktadır.</em> Gelecekte çevrimiçi özellikler için
+                                gerekli olacaktır (kapak resmi yükleme, hesap işlemleri).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="info-card tech-card">
+                <div class="card-header">
+                    <div class="icon-wrapper gradient">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                    </div>
+                    <h2>Kullanılan Teknolojiler</h2>
+                </div>
+                <div class="card-body">
+                    <p class="tech-intro">
+                        Uygulama şu anda yalnızca yerel işlem yapan kütüphaneleri kullanmaktadır.
+                        Çevrimiçi özellikler için hazırlanan ancak <strong>aktif olmayan</strong> altyapılar:
+                    </p>
+                    <div class="tech-stack">
+                        <div class="tech-item active-tech">
+                            <div class="tech-logo media3">M3</div>
+                            <div class="tech-info">
+                                <h4>Media3 ExoPlayer <span class="tech-status">Aktif</span></h4>
+                                <p>Yerel medya oynatma motoru</p>
+                            </div>
+                        </div>
+                        <div class="tech-item inactive-tech">
+                            <div class="tech-logo signalr">SR</div>
+                            <div class="tech-info">
+                                <h4>SignalR <span class="tech-status">Devre Dışı</span></h4>
+                                <p>Çevrimiçi odalar için hazır ancak kullanılmıyor</p>
+                            </div>
+                        </div>
+                        <div class="tech-item inactive-tech">
+                            <div class="tech-logo retrofit">RF</div>
+                            <div class="tech-info">
+                                <h4>Retrofit & OkHttp <span class="tech-status">Devre Dışı</span></h4>
+                                <p>API için hazır ancak kullanılmıyor</p>
+                            </div>
+                        </div>
+                        <div class="tech-item inactive-tech">
+                            <div class="tech-logo coil">C</div>
+                            <div class="tech-info">
+                                <h4>Coil <span class="tech-status">Devre Dışı</span></h4>
+                                <p>Kapak resmi için hazır ancak kullanılmıyor</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="info-card security-card">
+                <div class="card-header">
+                    <div class="icon-wrapper green">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <h2>Veri Güvenliği ve Gizlilik Taahhüdümüz</h2>
+                </div>
+                <div class="card-body">
+                    <div class="commitment-grid">
+                        <div class="commitment-item">
+                            <div class="check-icon">✓</div>
+                            <div>
+                                <h4>Reklamsız & İzleme Yok</h4>
+                                <p>
+                                    Kullanıcı verileriniz reklam ağlarıyla <strong>asla paylaşılmaz</strong>.
+                                    Konum, rehber veya kişisel verilere <strong>erişilmez</strong>.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="commitment-item">
+                            <div class="check-icon">✓</div>
+                            <div>
+                                <h4>%100 Çevrimdışı Çalışma</h4>
+                                <p>
+                                    Şu anda uygulama <strong>hiçbir sunucu iletişimi</strong> yapmaz.
+                                    Tüm veriler cihazınızda kalır.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="commitment-item">
+                            <div class="check-icon">✓</div>
+                            <div>
+                                <h4>Gelecekte Şeffaf Güncelleme</h4>
+                                <p>
+                                    Çevrimiçi özellikler aktif edildiğinde, bu politika önceden
+                                    güncellenecek ve kullanıcılar bilgilendirilecektir.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="info-card rights-card">
+                <div class="card-header">
+                    <div class="icon-wrapper pink">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <h2>Kullanıcı Hakları</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="rights-list">
+                        <li>
+                            <span class="bullet">🧹</span>
+                            <div>
+                                <strong>Tam Veri Kontrolü:</strong> Tüm müzik verileri cihazınızda kalır.
+                                Uygulama kaldırıldığında <strong>hiçbir veri arka planda kalmaz</strong> -
+                                çünkü hiçbir sunucuya veri gönderilmemiştir.
+                            </div>
+                        </li>
+                        <li>
+                            <span class="bullet">📱</span>
+                            <div>
+                                <strong>Hesap Gerektirmez:</strong> Şu anda uygulamayı kullanmak için
+                                <strong>hiçbir kayıt veya giriş</strong> yapmanız gerekmez.
+                            </div>
+                        </li>
+                        <li class="future-right">
+                            <span class="bullet">🔮</span>
+                            <div>
+                                <strong>Gelecek Haklar:</strong> Çevrimiçi özellikler aktif edildiğinde,
+                                hesap silme ve veri indirme hakları sağlanacaktır.
+                                <span class="future-tag">Gelecek Güncelleme</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="contact-section">
+                <div class="contact-card">
+                    <h3>Sorularınız mı Var?</h3>
+                    <p>Gizlilik politikamız hakkında bilgi almak için bize ulaşın:</p>
+                    
+                    <a href="mailto:rslsoftt@gmail.com" class="email-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                        rslsoft@gmail.com
+                    </a>
+                </div>
+            </section>
+
+        </main>
+
+        <footer>
+            <p>&copy; 2026 RSL SOFT. Tüm hakları saklıdır.</p>
+            <p class="footer-note">
+                Bu gizlilik politikası RSL Music uygulaması için hazırlanmıştır.
+                Çevrimiçi özellikler devre dışıdır (v1.1).
+            </p>
+        </footer>
     </div>
 
-    <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
-    </div>
-
-    <script src="_framework/blazor.webassembly.js"></script>
-    <script src="js/privacy.js"></script>
+    <script>
+        // Sayfa içi kaydırma efekti
+        window.scrollToElement = (elementId) => {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        };
+    </script>
 </body>
 </html>
