@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RSL Music - Gizlilik Politikası</title>
+    <base href="/" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/privacy.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="RslSoftMusicAppBlazor.styles.css" rel="stylesheet" />
+    <style>
+        /* Siyah yuvarlağı ve hata barını gizliyoruz */
+        .loading-progress, #blazor-error-ui {
+            display: none;
+        }
+        /* Sayfa yüklenirken bembeyaz kalmasın diye hafif bir yazı */
+        .loading-msg {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: sans-serif;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="loading-msg">Yükleniyor...</div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="js/privacy.js"></script>
+</body>
+</html>
